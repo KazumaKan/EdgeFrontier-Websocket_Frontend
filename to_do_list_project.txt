@@ -1,15 +1,19 @@
-- Coding web at test.
-- Link host server by WebSocket.
-- Get data for back-end.
-- Show data for hardware.
-- Link to page graph.
-- Chenk tapy input to data.
-- Set the number to two decimal places.
-- Set variable get to data physics.
-- Get data physics show graph.
-- Limit time show data graph => 5 minute.
+                                                    Code                Test
+- Coding web at test.                               Done                Done
+- Link host server by WebSocket.                    Done                Work it
+- Get data for back-end.                            Done                Done
+- Show data for hardware.                           Done                Work it
+- Link to page graph.                               Done                Work it
+- Check tapy input to data.                         Done                Work it
+- Set the number to two decimal places.             Done                Work it
+- Set variable get to data physics.                 Work it             Work it
+- Event Shows only letters                          Done                Work it
+- Get data physics show graph.                      Work it             Work it
+- Limit time show data graph => 5 minute.           Work it             Work it
 
 - Complete
+    - Coding web at test.
+    - Get data for back-end.
 
 - Learning
     - HTML, CSS and JavaSript

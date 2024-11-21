@@ -28,12 +28,28 @@ const WebSocket = () => {
         const parsedData = JSON.parse(lastMessage.data); // Convert JavaScript Obj. to JSON
         console.log(parsedData); // Print the converted data into parsedData
 
+        // Format numerical values to two decimal places
+        const formatData = (value) => {
+          return typeof value === "number" ? value.toFixed(2) : value;
+        };
+
+        // Function to validate if the Event value contains only alphabetic characters
+        const validateEvent = (event) => {
+          // Check if the event is alphabetic using regex
+          return /^[a-zA-Z]*$/.test(event) ? event : "Invalid Event";
+        };
+
         // Update state with new data
         setData(
           parsedData.Data
             ? {
-                ...parsedData.Data,
-                Event: parsedData.Event,
+                CO2: formatData(parsedData.Data.CO2),
+                HUMID: formatData(parsedData.Data.HUMID),
+                PRESSURE: formatData(parsedData.Data.PRESSURE),
+                RA: formatData(parsedData.Data.RA),
+                TEMP: formatData(parsedData.Data.TEMP),
+                VOC: formatData(parsedData.Data.VOC),
+                Event: validateEvent(parsedData.Event),
                 HardwareID: parsedData.HardwareID,
                 TimeStamp: parsedData.TimeStamp,
               }
