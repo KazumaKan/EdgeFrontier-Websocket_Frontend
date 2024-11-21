@@ -5,9 +5,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 
-// import NavBar from './assets/NavBar'
 import MainLayout from "./layouts/MainLayout";
 import HomePage from "./pages/HomePage";
+import DataHardware from "./pages/DataHardware";
 import GraphHardware from "./pages/GraphHardware";
 
 const App = () => {
@@ -15,7 +15,8 @@ const App = () => {
     createRoutesFromElements(
       <Route path="/" element={<MainLayout />}>
         <Route index element={<HomePage />} />
-        <Route index element={<GraphHardware />} />
+        <Route path="/DataHardware" element={<DataHardware />} />
+        <Route path="/GraphHardware" element={<GraphHardware />} />
       </Route>
     )
   );
