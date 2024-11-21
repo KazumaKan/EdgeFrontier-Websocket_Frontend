@@ -1,0 +1,18 @@
+- Coding web at test.
+- Link host server by WebSocket.
+- Get data for back-end.
+- Show data for hardware.
+- Link to page graph.
+- Chenk tapy input to data.
+- Set the number to two decimal places.
+- Set variable get to data physics.
+- Get data physics show graph.
+- Limit time show data graph => 5 minute.
+
+- Complete
+
+- Learning
+    - HTML, CSS and JavaSript
+    - React
+    - WebSocket
+    - JSON
