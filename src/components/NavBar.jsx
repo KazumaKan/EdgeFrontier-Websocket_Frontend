@@ -18,6 +18,9 @@ function NavBar() {
         <li>
           <Link to="/GraphHardware">GraphHardware</Link>
         </li>
+        <li>
+          <Link to="/Test">Test</Link>
+        </li>
       </ul>
     </header>
   );

@@ -1,13 +1,7 @@
 import { useEffect, useState } from "react";
-import useWebSocket from "react-use-websocket";
+import socket from "./DataHost"; // Import the socket from DataHost.js
 
-const WebSocket = () => {
-  const { lastMessage } = useWebSocket("wss://server-test-v1-0.onrender.com", {
-    // host server
-    shouldReconnect: () => true, // When the connect is lost, it will reconnect immediately
-  });
-
-  // Declare a "data" variable
+const DataHardware = () => {
   const [data, setData] = useState({
     CO2: "Loading...",
     HUMID: "Loading...",
@@ -20,50 +14,57 @@ const WebSocket = () => {
     TimeStamp: "Loading...",
   });
 
-  //   Manage something that will happen
   useEffect(() => {
-    try {
-      if (lastMessage?.data) {
-        // Check if the data is entered in "lastMessage"
-        const parsedData = JSON.parse(lastMessage.data); // Convert JavaScript Obj. to JSON
-        console.log(parsedData); // Print the converted data into parsedData
+    // ฟังข้อความที่เข้ามาจาก WebSocket
+    socket.onmessage = (event) => {
+      try {
+        if (event.data) {
+          const parsedData = JSON.parse(event.data); // แปลงข้อมูลจากข้อความ JSON
+          console.log(parsedData); // พิมพ์ข้อมูลที่ได้รับ
 
-        // Format numerical values to two decimal places
-        const formatData = (value) => {
-          return typeof value === "number" ? value.toFixed(2) : value;
-        };
+          // ฟังก์ชันจัดการการ format ข้อมูล
+          const formatData = (value) => {
+            // ตรวจสอบว่า value เป็นตัวเลขหรือไม่
+            if (typeof value === "number" && !isNaN(value)) {
+              return value.toFixed(2); // แสดงเป็นทศนิยม 2 ตำแหน่ง
+            }
+            return value; // หากไม่ใช่ตัวเลขให้ส่งค่าตามเดิม
+          };
 
-        // Function to validate if the Event value contains only alphabetic characters
-        const validateEvent = (event) => {
-          // Check if the event is alphabetic using regex
-          return /^[a-zA-Z]*$/.test(event) ? event : "Invalid Event";
-        };
+          // ฟังก์ชัน validate ข้อมูล Event
+          const validateEvent = (event) => {
+            return /^[a-zA-Z]*$/.test(event) ? event : "Invalid Event";
+          };
 
-        // Update state with new data
-        setData(
-          parsedData.Data
-            ? {
-                CO2: formatData(parsedData.Data.CO2),
-                HUMID: formatData(parsedData.Data.HUMID),
-                PRESSURE: formatData(parsedData.Data.PRESSURE),
-                RA: formatData(parsedData.Data.RA),
-                TEMP: formatData(parsedData.Data.TEMP),
-                VOC: formatData(parsedData.Data.VOC),
-                Event: validateEvent(parsedData.Event),
-                HardwareID: parsedData.HardwareID,
-                TimeStamp: parsedData.TimeStamp,
-              }
-            : data
-        );
+          // อัปเดต state เมื่อได้รับข้อมูล
+          setData(
+            parsedData.Data
+              ? {
+                  CO2: formatData(parsedData.Data.CO2),
+                  HUMID: formatData(parsedData.Data.HUMID),
+                  PRESSURE: formatData(parsedData.Data.PRESSURE),
+                  RA: formatData(parsedData.Data.RA),
+                  TEMP: formatData(parsedData.Data.TEMP),
+                  VOC: formatData(parsedData.Data.VOC),
+                  Event: validateEvent(parsedData.Event),
+                  HardwareID: parsedData.HardwareID,
+                  TimeStamp: parsedData.TimeStamp,
+                }
+              : data
+          );
+        }
+      } catch (err) {
+        console.error("Error parsing WebSocket message:", err);
       }
-    } catch (err) {
-      // Save error that occur in try
-      console.error("Error parsing WebSocket message:", err);
-    }
-  }, [lastMessage]);
+    };
+
+    // ทำการ clean up เมื่อ component ถูก unmount
+    return () => {
+      socket.onmessage = null; // เคลียร์ listener
+    };
+  }, [data]); // ใช้ useEffect เพื่ออัปเดตข้อมูลทุกครั้งที่มีการเปลี่ยนแปลง
 
   return (
-    // Data block
     <div className="p-6 bg-gray-100 min-h-screen">
       <div className="bg-white p-6 rounded-md shadow-md mb-6">
         <h1 className="text-2xl font-bold mb-4">WebSocket Data Stream</h1>
@@ -73,7 +74,7 @@ const WebSocket = () => {
         </p>
       </div>
 
-      {/* Show data on the creat block */}
+      {/* แสดงข้อมูล */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <DataCard title="CO2" value={data.CO2} />
         <DataCard title="Humidity" value={data.HUMID} />
@@ -99,4 +100,4 @@ const DataCard = ({ title, value }) => {
   );
 };
 
-export default WebSocket;
+export default DataHardware;
