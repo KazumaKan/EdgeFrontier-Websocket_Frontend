@@ -1,0 +1,163 @@
+// DataHost.jsx
+import { useState, useEffect } from "react";
+
+// สร้าง WebSocket instance เชื่อมต่อไปยังเซิร์ฟเวอร์
+const socket = new WebSocket("wss://server-test-latest.onrender.com/demo");
+
+// ประกาศตัวแปรสำหรับข้อมูลต่างๆ ที่จะได้รับจากเซิร์ฟเวอร์
+const useWebSocketData = () => {
+  const [data, setData] = useState({
+    CO2: "Loading...",
+    HUMID: "Loading...",
+    PRESSURE: "Loading...",
+    RA: "Loading...",
+    TEMP: "Loading...",
+    VOC: "Loading...",
+    Event: "Loading...",
+    HardwareID: "Loading...",
+    TimeStamp: "Loading...",
+  });
+
+  const [chartData, setChartData] = useState([
+    {
+      name: "Data 1",
+      CO2: 0,
+      HUMID: 0,
+      PRESSURE: 0,
+      TEMP: 0,
+      VOC: 0,
+      time: new Date().toLocaleTimeString(),
+    },
+  ]);
+
+  useEffect(() => {
+    // ฟังข้อความที่เข้ามาจาก WebSocket
+    socket.onmessage = (event) => {
+      try {
+        if (event.data) {
+          const parsedData = JSON.parse(event.data); // แปลงข้อมูลจากข้อความ JSON
+          console.log(parsedData); // พิมพ์ข้อมูลที่ได้รับ
+
+          // ฟังก์ชันจัดการข้อมูล
+          const formatData = (value) => {
+            return typeof value === "number" ? value.toFixed(2) : value;
+          };
+
+          const validateEvent = (event) => {
+            return /^[a-zA-Z]*$/.test(event) ? event : "Invalid Event";
+          };
+
+          // อัปเดตข้อมูล
+          setData({
+            CO2: formatData(parsedData.Data.CO2),
+            HUMID: formatData(parsedData.Data.HUMID),
+            PRESSURE: formatData(parsedData.Data.PRESSURE),
+            RA: formatData(parsedData.Data.RA),
+            TEMP: formatData(parsedData.Data.TEMP),
+            VOC: formatData(parsedData.Data.VOC),
+            Event: validateEvent(parsedData.Event),
+            HardwareID: parsedData.HardwareID,
+            TimeStamp: parsedData.TimeStamp,
+          });
+
+          // อัปเดตข้อมูลกราฟ โดยไม่รีเฟรชข้อมูลเดิม
+          setChartData((prevState) => [
+            ...prevState,
+            {
+              name: `Data ${prevState.length + 1}`,
+              CO2: parsedData.Data.CO2,
+              HUMID: parsedData.Data.HUMID,
+              PRESSURE: parsedData.Data.PRESSURE,
+              TEMP: parsedData.Data.TEMP,
+              VOC: parsedData.Data.VOC,
+              time: new Date().toLocaleTimeString(), // เพิ่มเวลาใหม่
+            },
+          ]);
+        }
+      } catch (err) {
+        console.error("Error parsing WebSocket message:", err);
+      }
+    };
+
+    // ทำการ clean up เมื่อ component ถูก unmount
+    return () => {
+      socket.onmessage = null; // เคลียร์ listener
+    };
+  }, []); // ใช้ useEffect เพื่อเริ่มต้นฟังก์ชันการรับข้อมูล
+
+  return { data, chartData };
+};
+
+export default useWebSocketData;
+
+
+////////////////////////////////////////////////////////
+
+// DataHardware.jsx
+// import React from "react";
+
+import { useWebSocketData } from "./DataHost"; // นำเข้า hook จาก DataHost.js
+
+const DataHardware = () => {
+  const { data } = useWebSocketData();
+
+  return (
+    <div>
+      <h3>Hardware Data</h3>
+      <p>CO2: {data.CO2}</p>
+      <p>Humidity: {data.HUMID}</p>
+      <p>Pressure: {data.PRESSURE}</p>
+      <p>RA: {data.RA}</p>
+      <p>Temperature: {data.TEMP}</p>
+      <p>VOC: {data.VOC}</p>
+      <p>Event: {data.Event}</p>
+      <p>Hardware ID: {data.HardwareID}</p>
+      <p>Timestamp: {data.TimeStamp}</p>
+    </div>
+  );
+};
+
+export default DataHardware;
+
+////////////////////////////////////////////////////////
+
+// GraphHardware.jsx
+import { useWebSocketData } from "./DataHost"; // นำเข้า hook จาก DataHost.js
+import DataHardware from "./DataHardware";
+import React from "react";
+import {
+  LineChart,
+  Line,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from "recharts";
+
+const GraphHardware = () => {
+  const { chartData } = useWebSocketData();
+
+  return (
+    <ResponsiveContainer width="100%" height={400}>
+      <LineChart data={chartData}>
+        <CartesianGrid strokeDasharray="3 3" />
+        <XAxis dataKey="time" />
+        <YAxis />
+        <Tooltip />
+        <Legend />
+        <Line type="monotone" dataKey="CO2" stroke="#8884d8" />
+        <Line type="monotone" dataKey="HUMID" stroke="#82ca9d" />
+        <Line type="monotone" dataKey="PRESSURE" stroke="#ff7300" />
+        <Line type="monotone" dataKey="TEMP" stroke="#ff0000" />
+        <Line type="monotone" dataKey="VOC" stroke="#00ff00" />
+      </LineChart>
+    </ResponsiveContainer>
+  );
+};
+
+export { DataHardware, GraphHardware };
+export default React;
+
+// export default GraphHardware;
