@@ -1,5 +1,5 @@
 // Create a new WebSocket instance and connect to the server
-const socket = new WebSocket("wss://server-test-v1-1.onrender.com/demo");
+const socket = new WebSocket("wss://server-test-latest.onrender.com/demo");
 
 // Listener for when the connection is successfully opened
 socket.onopen = () => {
