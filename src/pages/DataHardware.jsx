@@ -1,68 +1,24 @@
 import { useEffect, useState } from "react";
-import socket from "./DataHost"; // Import the socket from DataHost.js
+import { dataStore } from "./DataHost"; // Import the data store
 
 const DataHardware = () => {
-  const [data, setData] = useState({
-    CO2: "Loading...",
-    HUMID: "Loading...",
-    PRESSURE: "Loading...",
-    RA: "Loading...",
-    TEMP: "Loading...",
-    VOC: "Loading...",
-    Event: "Loading...",
-    HardwareID: "Loading...",
-    TimeStamp: "Loading...",
-  });
+  const [data, setData] = useState(dataStore); // Initialize state with dataStore values
 
   useEffect(() => {
-    // ฟังข้อความที่เข้ามาจาก WebSocket
-    socket.onmessage = (event) => {
-      try {
-        if (event.data) {
-          const parsedData = JSON.parse(event.data); // แปลงข้อมูลจากข้อความ JSON
-          console.log(parsedData); // พิมพ์ข้อมูลที่ได้รับ
+    // Set up an interval to check for changes every 2 seconds
+    const interval = setInterval(() => {
+      setData({ ...dataStore }); // Update state with the latest data from dataStore
+    }, 2000);
 
-          // ฟังก์ชันจัดการการ format ข้อมูล
-          const formatData = (value) => {
-            // ตรวจสอบว่า value เป็นตัวเลขหรือไม่
-            if (typeof value === "number" && !isNaN(value)) {
-              return value.toFixed(2); // แสดงเป็นทศนิยม 2 ตำแหน่ง
-            }
-            return value; // หากไม่ใช่ตัวเลขให้ส่งค่าตามเดิม
-          };
+    // Clean up the interval on component unmount
+    return () => clearInterval(interval);
+  }, []);
 
-          // ฟังก์ชัน validate ข้อมูล Event
-          const validateEvent = (event) => {
-            return /^[a-zA-Z]*$/.test(event) ? event : "Invalid Event";
-          };
-
-          // อัปเดต state เมื่อได้รับข้อมูล
-          setData(
-            parsedData.Data
-              ? {
-                  CO2: formatData(parsedData.Data.CO2),
-                  HUMID: formatData(parsedData.Data.HUMID),
-                  PRESSURE: formatData(parsedData.Data.PRESSURE),
-                  RA: formatData(parsedData.Data.RA),
-                  TEMP: formatData(parsedData.Data.TEMP),
-                  VOC: formatData(parsedData.Data.VOC),
-                  Event: validateEvent(parsedData.Event),
-                  HardwareID: parsedData.HardwareID,
-                  TimeStamp: parsedData.TimeStamp,
-                }
-              : data
-          );
-        }
-      } catch (err) {
-        console.error("Error parsing WebSocket message:", err);
-      }
-    };
-
-    // ทำการ clean up เมื่อ component ถูก unmount
-    return () => {
-      socket.onmessage = null; // เคลียร์ listener
-    };
-  }, [data]); // ใช้ useEffect เพื่ออัปเดตข้อมูลทุกครั้งที่มีการเปลี่ยนแปลง
+  // Function to format timestamp
+  const formatTimeStamp = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString(); // Formats the timestamp as a local string (e.g., "11/23/2024, 4:35:50 PM")
+  };
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
@@ -74,7 +30,6 @@ const DataHardware = () => {
         </p>
       </div>
 
-      {/* แสดงข้อมูล */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <DataCard title="CO2" value={data.CO2} />
         <DataCard title="Humidity" value={data.HUMID} />
@@ -84,13 +39,13 @@ const DataHardware = () => {
         <DataCard title="VOC" value={data.VOC} />
         <DataCard title="Event" value={data.Event} />
         <DataCard title="Hardware ID" value={data.HardwareID} />
-        <DataCard title="Timestamp" value={data.TimeStamp} />
+        {/* Format the timestamp */}
+        <DataCard title="Timestamp" value={formatTimeStamp(data.TimeStamp)} />
       </div>
     </div>
   );
 };
 
-// Reusable DataCard component for displaying key-value pairs
 const DataCard = ({ title, value }) => {
   return (
     <div className="p-4 bg-white rounded-md shadow-md">

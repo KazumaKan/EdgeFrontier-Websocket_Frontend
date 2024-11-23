@@ -1,19 +1,26 @@
                                                     Code                Test
 - Coding web at test.                               Done                Done
-- Link host server by WebSocket.                    Done                Work it
+- Link host server by WebSocket.                    Done                Done
 - Get data for back-end.                            Done                Done
-- Show data for hardware.                           Done                Work it
-- Link to page graph.                               Done                Work it
+- Show data for hardware.                           Done                Done
+- Link to page graph.                               Done                Done
 - Check tapy input to data.                         Done                Work it
 - Set the number to two decimal places.             Done                Work it
-- Set variable get to data physics.                 Work it             Work it
-- Event Shows only letters                          Done                Work it
-- Get data physics show graph.                      Work it             Work it
-- Limit time show data graph => 5 minute.           Work it             Work it
+- Set variable get to data physics.                 Done                Done
+- Event Shows only letters                          Done                Done
+- Show data in graph.                               Done                Done
+- Limit time show data graph => 2 minute.           Done                Done
 
 - Complete
-    - Coding web at test.
-    - Get data for back-end.
+    - Coding web at test.                              
+    - Link host server by WebSocket.                    
+    - Get data for back-end.                        
+    - Show data for hardware.                          
+    - Link to page graph.                                     
+    - Set variable get to data physics.                
+    - Event Shows only letters                         
+    - Show data in graph.                             
+    - Limit time show data graph => 2 minute.
 
 - Learning
     - HTML, CSS and JavaSript

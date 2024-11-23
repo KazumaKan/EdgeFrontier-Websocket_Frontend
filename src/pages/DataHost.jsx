@@ -1,23 +1,51 @@
-// Create a new WebSocket instance and connect to the server
-const socket = new WebSocket("wss://server-test-latest.onrender.com/demo");
+// DataHost.jsx
+const socket = new WebSocket("wss://server-test-v1-1.onrender.com/demo");
 
-// Listener for when the connection is successfully opened
-socket.onopen = () => {
-  console.log("WebSocket is connected");
+// Declare variables to store data from the server
+export const dataStore = {
+  CO2: null,
+  HUMID: null,
+  PRESSURE: null,
+  RA: null,
+  TEMP: null,
+  VOC: null,
+  Event: null,
+  HardwareID: null,
+  TimeStamp: null,
 };
 
 // Listener for receiving messages from the WebSocket server
 socket.onmessage = (event) => {
-  console.log("Received message:", event.data);
-  // You can pass the received message to a component or handle it here
+  try {
+    if (event.data) {
+      const parsedData = JSON.parse(event.data); // Parse the incoming JSON data
+      console.log(parsedData); // Log received data
+
+      // Update dataStore with new values
+      dataStore.CO2 = parsedData.Data.CO2;
+      dataStore.HUMID = parsedData.Data.HUMID;
+      dataStore.PRESSURE = parsedData.Data.PRESSURE;
+      dataStore.RA = parsedData.Data.RA;
+      dataStore.TEMP = parsedData.Data.TEMP;
+      dataStore.VOC = parsedData.Data.VOC;
+      dataStore.Event = parsedData.Event;
+      dataStore.HardwareID = parsedData.HardwareID;
+      dataStore.TimeStamp = parsedData.TimeStamp;
+    }
+  } catch (err) {
+    console.error("Error parsing WebSocket message:", err);
+  }
 };
 
-// Listener for error events
+// Other WebSocket events
+socket.onopen = () => {
+  console.log("WebSocket is connected");
+};
+
 socket.onerror = (error) => {
   console.error("WebSocket Error:", error);
 };
 
-// Listener for when the connection is closed
 socket.onclose = () => {
   console.log("WebSocket connection closed");
 };

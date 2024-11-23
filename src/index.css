@@ -11,7 +11,7 @@ header {
 }
 
 body {
-  @apply bg-gray-100 antialiased;
+  @apply bg-slate-200 antialiased;
 }
 
 main {

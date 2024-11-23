@@ -1,25 +1,40 @@
 import reactlogo from "../assets/react.svg";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 
 function NavBar() {
+  const activeLink = ({ isActive }) =>
+    isActive
+      ? "bg-blue-700 bg-opacity-60 rounded px-3 py-2"
+      : "hover:bg-blue-700 hover:bg-opacity-20 rounded px-3 py-2";
+
   return (
     <header>
       <div className="flex mr-auto gap-x-2 font-semibold text-2xl">
-        <img src={reactlogo} alt="React Logo"></img>
+        <Link to="/">
+          <img src={reactlogo} alt="React Logo"></img>
+        </Link>
         React : Todo List
       </div>
       <ul className="hidden md:flex gap-x-6">
         <li>
-          <Link to="/">Home</Link>
+          <NavLink to="/" className={activeLink}>
+            Home
+          </NavLink>
         </li>
         <li>
-          <Link to="/DataHardware">DataHardware</Link>
+          <NavLink to="/DataHardware" className={activeLink}>
+            DataHardware
+          </NavLink>
         </li>
         <li>
-          <Link to="/GraphHardware">GraphHardware</Link>
+          <NavLink to="/GraphHardware" className={activeLink}>
+            GraphHardware
+          </NavLink>
         </li>
         <li>
-          <Link to="/Test">Test</Link>
+          <NavLink to="/Total" className={activeLink}>
+            Total
+          </NavLink>
         </li>
       </ul>
     </header>
